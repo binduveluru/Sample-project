@@ -33,11 +33,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Server configuration error' }, { status: 500 });
     }
 
-    const token = jwt.sign({ userId: user.id }, secret, {
+    const token = jwt.sign({ userId: user.id, role: user.role}, secret, {
       expiresIn: '1h',
     });
 
-    return NextResponse.json({ token }, { status: 200 });
+    return NextResponse.json({ token ,role: user.role}, { status: 200 });
   } catch (error) {
     return NextResponse.json({ message: 'Server error', error }, { status: 500 });
   }

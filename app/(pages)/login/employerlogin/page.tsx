@@ -8,7 +8,6 @@ import Cookies from 'js-cookie';
 const EmployerLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("")
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -22,29 +21,28 @@ const EmployerLogin = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password,role }),
+        body: JSON.stringify({ email, password }),
       });
       console.log(response)
 
       const data = await response.json();
+      console.log(data)
       if (response.ok) {
         Cookies.set('token', data.token);
-        Cookies.set('role', data.role); // Save role in cookies
-        console.log(data.role)
+        Cookies.set('role', data.role);
         console.log(data.token)
+        console.log(data.role)
 
         if (data.role === 'candidate') {
-          router.push("/candidate-dashboard");
+          router.push("/candidatedashboard");
         } else if (data.role === 'employer') {
           router.push("/dashboard/employerdashboard");
+        } else {
+          setError("Invalid role. Please try again.");
         }
-        else {
-            setError("Invalid role. Please try again.");
-          }
       } else {
         setError(data.message);
       }
-
     } catch (error) {
       setError("An error occurred. Please try again.");
     }

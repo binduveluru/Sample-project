@@ -6,10 +6,10 @@ import jwt from 'jsonwebtoken';
 const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
-  const { email, password, role } = await req.json();
+  const { email, password } = await req.json();
 
-  if (!email || !password || !role) {
-    return NextResponse.json({ message: 'Email and password are required' }, { status: 200 });
+  if (!email || !password) {
+    return NextResponse.json({ message: 'Email and password are required' }, { status: 400 });
   }
 
   try {
@@ -18,27 +18,27 @@ export async function POST(req: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json({ message: 'Invalid email or password' }, { status: 202 });
+      return NextResponse.json({ message: 'Invalid email or password' }, { status: 401 });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return NextResponse.json({ message: 'Invalid email or password' }, { status: 202 });
+      return NextResponse.json({ message: 'Invalid email or password' }, { status: 401 });
     }
 
     const secret = process.env.JWT_SECRET;
 
     if (!secret) {
-      return NextResponse.json({ message: 'Server configuration error' }, { status: 205 });
+      return NextResponse.json({ message: 'Server configuration error' }, { status: 500 });
     }
 
-    const token = jwt.sign({ userId: user.id }, secret, {
+    const token = jwt.sign({ userId: user.id, role: user.role}, secret, {
       expiresIn: '1h',
     });
 
-    return NextResponse.json({ token }, { status: 201 });
+    return NextResponse.json({ token ,role: user.role}, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ message: 'Server error', error }, { status: 206 });
+    return NextResponse.json({ message: 'Server error', error }, { status: 500 });
   }
 }

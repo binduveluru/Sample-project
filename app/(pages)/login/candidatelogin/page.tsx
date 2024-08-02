@@ -28,11 +28,15 @@ const CandidateLogin = () => {
       if (response.ok) {
         Cookies.set('token', data.token);
         Cookies.set('role', data.role); // Save role in cookies
+        console.log(data.token)
+        console.log(data.role)
 
         if (data.role === 'candidate') {
-          router.push("/candidate-dashboard");
+          router.push("/dashboard/candidatedashboard");
         } else if (data.role === 'employer') {
-          router.push("/employer-dashboard");
+          router.push("/dashboard/employerdashboard");
+        }else {
+          setError("Invalid role. Please try again.");
         }
       } else {
         setError(data.message);
